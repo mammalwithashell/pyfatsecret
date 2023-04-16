@@ -12,20 +12,20 @@ fs = Fatsecret(consumer_key, consumer_secret)
 print("\n\n ---- No Authentication Required ---- \n\n")
 
 foods = fs.foods_search("Tacos")
-print("Food Search Results: {}".format(len(foods)))
-print("{}\n".format(foods))
+print(f"Food Search Results: {len(foods)}")
+print(f"{foods}\n")
 
 food = fs.food_get("1345")
 print("Food Item 1345")
-print("{}\n".format(food))
+print(f"{food}\n")
 
 recipes = fs.recipes_search("Tomato Soup")
 print("Recipe Search Results:")
-print("{}\n".format(recipes))
+print(f"{recipes}\n")
 
 recipe = fs.recipe_get("88339")
 print("Recipe 88339")
-print("{}\n".format(recipe))
+print(f"{recipe}\n")
 
 # Test Calls with 3 Legged Oauth
 
@@ -35,10 +35,10 @@ print(fs.get_authorize_url())
 session_token = fs.authenticate(input("\nPIN: "))
 
 foods = fs.foods_get_most_eaten()
-print("Most Eaten Food Results: {}".format(len(foods)))
+print(f"Most Eaten Food Results: {len(foods)}")
 
 recipes = fs.recipes_search("Enchiladas")
-print("Recipe Search Results: {}".format(len(recipes)))
+print(f"Recipe Search Results: {len(recipes)}")
 
 profile = fs.profile_get()
-print("Profile: {}".format(profile))
+print(f"Profile: {profile}")
