@@ -126,83 +126,83 @@ class Fatsecret:
         :param response: JSON response from API call
         :type response: requests.Response
         """
-        if response.json():
+        if not response.json():
+            return
+        for key in response.json():
 
-            for key in response.json():
+            # Error Code Handling
+            if key == "error":
+                code = response.json()[key]["code"]
+                message = response.json()[key]["message"]
+                if code == 2:
+                    raise AuthenticationError(
+                        2, "This api call requires an authenticated session"
+                    )
 
-                # Error Code Handling
-                if key == "error":
-                    code = response.json()[key]["code"]
-                    message = response.json()[key]["message"]
-                    if code == 2:
-                        raise AuthenticationError(
-                            2, "This api call requires an authenticated session"
-                        )
+                elif code in [1, 10, 11, 12, 20, 21]:
+                    raise GeneralError(code, message)
 
-                    elif code in [1, 10, 11, 12, 20, 21]:
-                        raise GeneralError(code, message)
+                elif 3 <= code <= 9:
+                    raise AuthenticationError(code, message)
 
-                    elif 3 <= code <= 9:
-                        raise AuthenticationError(code, message)
+                elif 101 <= code <= 108:
+                    raise ParameterError(code, message)
 
-                    elif 101 <= code <= 108:
-                        raise ParameterError(code, message)
+                elif 201 <= code <= 207:
+                    raise ApplicationError(code, message)
 
-                    elif 201 <= code <= 207:
-                        raise ApplicationError(code, message)
+            # All other response options
+            elif key == "success":
+                return True
 
-                # All other response options
-                elif key == "success":
-                    return True
+            elif key == "foods":
+                return response.json()[key]["food"]
 
-                elif key == "foods":
-                    return response.json()[key]["food"]
+            elif key == "suggestions":
+                return response.json()[key]
 
-                elif key == "suggestions":
+            elif key == "recipes":
+                return response.json()[key]["recipe"]
+
+            elif key == "saved_meals":
+                return response.json()[key]["saved_meal"]
+
+            elif key == "saved_meal_items":
+                return response.json()[key]["saved_meal_item"]
+
+            elif key == "exercise_types":
+                return response.json()[key]["exercise"]
+
+            elif key == "food_entries":
+                if response.json()[key] is None:
+                    return []
+                entries = response.json()[key]["food_entry"]
+                if type(entries) == dict:
+                    return [entries]
+                elif type(entries) == list:
+                    return entries
+
+            elif key == "month":
+                return response.json()[key]["day"]
+
+            elif key == "profile":
+                if "auth_token" in response.json()[key]:
+                    return (
+                        response.json()[key]["auth_token"],
+                        response.json()[key]["auth_secret"],
+                    )
+                else:
                     return response.json()[key]
 
-                elif key == "recipes":
-                    return response.json()[key]["recipe"]
-
-                elif key == "saved_meals":
-                    return response.json()[key]["saved_meal"]
-
-                elif key == "saved_meal_items":
-                    return response.json()[key]["saved_meal_item"]
-
-                elif key == "exercise_types":
-                    return response.json()[key]["exercise"]
-
-                elif key == "food_entries":
-                    if response.json()[key] is None:
-                        return []
-                    entries = response.json()[key]["food_entry"]
-                    if type(entries) == dict:
-                        return [entries]
-                    elif type(entries) == list:
-                        return entries
-
-                elif key == "month":
-                    return response.json()[key]["day"]
-
-                elif key == "profile":
-                    if "auth_token" in response.json()[key]:
-                        return (
-                            response.json()[key]["auth_token"],
-                            response.json()[key]["auth_secret"],
-                        )
-                    else:
-                        return response.json()[key]
-
-                elif key in (
-                    "food",
-                    "recipe",
-                    "recipe_types",
-                    "saved_meal_id",
-                    "saved_meal_item_id",
-                    "food_entry_id",
-                ):
-                    return response.json()[key]
+            elif key in (
+                "food",
+                "recipe",
+                "recipe_types",
+                "saved_meal_id",
+                "saved_meal_item_id",
+                "food_entry_id",
+            ):
+                return response.json()[key]
 
     def food_add_favorite(self, food_id, serving_id=None, number_of_units=None):
         """Add a food to a user's favorite according to the parameters specified.

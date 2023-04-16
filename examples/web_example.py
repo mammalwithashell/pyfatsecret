@@ -13,18 +13,15 @@ fs = Fatsecret(consumer_key, consumer_secret)
 
 @app.route("/")
 def index():
-    if request.args.get("oauth_verifier"):
-
-        session_token = fs.authenticate(request.args.get("oauth_verifier"))
-
-        return redirect(url_for("profile"))
-
-    else:
+    if not request.args.get("oauth_verifier"):
         return "<ul><li><a href={0}>Authenticate Access Here</a></li>\
             <li><a href={1}>Example Search: Chicken Soup</a></li>\
             <li><a href={2}>Example Item Lookup: Item #1750</a></li>".format(
             url_for("authenticate"), "search/chicken%20soup", "food/1750"
         )
+    session_token = fs.authenticate(request.args.get("oauth_verifier"))
+
+    return redirect(url_for("profile"))
 
 
 @app.route("/auth")
@@ -45,16 +42,14 @@ def search(search_term):
 def food(item):
     food_item = fs.food_get(item)
 
-    return "<h1>Food Item</h1><div>{}</div>".format(food_item)
+    return f"<h1>Food Item</h1><div>{food_item}</div>"
 
 
 @app.route("/profile")
 def profile():
     food = fs.foods_get_most_eaten()
 
-    return "<h1>Profile</h1><div><strong>Most Eaten Foods</strong><br>{}</div>".format(
-        food
-    )
+    return f"<h1>Profile</h1><div><strong>Most Eaten Foods</strong><br>{food}</div>"
 
 
 if __name__ == "__main__":
