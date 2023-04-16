@@ -1,6 +1,6 @@
 # pyfatsecret
 
-![status](https://badge.fury.io/py/fatsecret.svg)
+[//]:#(![status](https://badge.fury.io/py/fatsecret.svg))
 
 This library provides a lightweight python wrapper for the Fatsecret API with the goal of making it easier to visualize the data retrieved from the API. To that end, this library will usually return lists of identical elements for ease of plotting, discarding extra header fields that the Fatsecret API otherwise includes. All API calls return either a single or list of JSON dictionaries.
 
